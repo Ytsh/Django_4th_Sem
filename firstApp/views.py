@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
-from firstApp.forms import CollegeForm
+from firstApp.forms import CollegeForm, StudentForm
 from firstApp.models import Student
 
 # Create your views here.
@@ -27,7 +27,14 @@ def addCollege(request):
     return render(request,'add_college.html', {'form':form})
 
 def addStudent(request):
-    pass
+    if request.method == 'POST':
+        form = StudentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('studentList')
+    else:
+        form = StudentForm()
+    return render(request,'add_student.html', {'form':form})
 
 def studentList(request):
     students = Student.objects.select_related('college').all()
