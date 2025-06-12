@@ -55,4 +55,7 @@ def addCollegeManual(request):
 
 def testing(request):
     print(request, request.POST.get('name'))
+
+def homepage(request):
+    return render(request, 'homePage.html')
     
