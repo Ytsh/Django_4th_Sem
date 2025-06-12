@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from firstApp.forms import CollegeForm, StudentForm
-from firstApp.models import Student
+from firstApp.models import College, Student
 
 # Create your views here.
 
@@ -41,3 +41,18 @@ def studentList(request):
     print(students[0].college.name)
     return render(request, 'student_list.html', {'students':students})
 
+def addCollegeManual(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        address = request.POST.get('address')
+        established_year = request.POST.get('established_year')
+
+        #Validate code here
+        college = College(name = name, address = address, established_year = established_year)
+        college.save()
+        return redirect('add_college')
+    return render(request, 'add_college_manual.html')
+
+def testing(request):
+    print(request, request.POST.get('name'))
+    
