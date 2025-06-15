@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from firstApp.forms import CollegeForm, StudentForm
 from firstApp.models import College, Student
@@ -58,4 +58,14 @@ def testing(request):
 
 def homepage(request):
     return render(request, 'homePage.html')
+
+def editStudent(request,pk):
+    student = get_object_or_404(Student, pk=pk)
+    if request.metthod == 'POST':
+        pass
+    else:
+        form = StudentForm(instance=student)
+        return render(request, 'edit-student.html', 
+                      {'form':form, 'student':student}
+                      )
     

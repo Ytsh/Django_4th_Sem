@@ -67,6 +67,7 @@ TEMPLATES = [
         },
     },
 ]
+# STATIC_URL = "/static/"
 
 WSGI_APPLICATION = 'training4ThSem.wsgi.application'
 
