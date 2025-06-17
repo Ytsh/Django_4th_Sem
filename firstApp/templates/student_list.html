@@ -26,6 +26,12 @@
             <td><button>
                 <a href="{% url 'editStudent' student.pk %}">Edit</a>
             </button></td>
+            <td>
+                <form action="{% url 'deleteStudent' student.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>

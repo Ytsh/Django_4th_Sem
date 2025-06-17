@@ -38,7 +38,6 @@ def addStudent(request):
 
 def studentList(request):
     students = Student.objects.select_related('college').all()
-    print(students[0].college.name)
     return render(request, 'student_list.html', {'students':students})
 
 def addCollegeManual(request):
@@ -61,11 +60,19 @@ def homepage(request):
 
 def editStudent(request,pk):
     student = get_object_or_404(Student, pk=pk)
-    if request.metthod == 'POST':
-        pass
+    if request.method == 'POST':
+        form = StudentForm(data = request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            return redirect('studentList')
     else:
         form = StudentForm(instance=student)
         return render(request, 'edit-student.html', 
                       {'form':form, 'student':student}
                       )
     
+def deleteStudent(request,pk):
+    if request.method == 'POST':
+        student = get_object_or_404(Student, pk = pk)
+        student.delete()
+        return redirect('studentList')
