@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from firstApp.forms import CollegeForm, StudentForm
-from firstApp.models import College, Student
+from firstApp.forms import CollegeForm, ProfileForm, StudentForm
+from firstApp.models import College, Profile, Student
 
 # Create your views here.
 
@@ -49,7 +49,7 @@ def addCollegeManual(request):
         #Validate code here
         college = College(name = name, address = address, established_year = established_year)
         college.save()
-        return redirect('add_college')
+        return redirect('studentList')
     return render(request, 'add_college_manual.html')
 
 def testing(request):
@@ -76,3 +76,18 @@ def deleteStudent(request,pk):
         student = get_object_or_404(Student, pk = pk)
         student.delete()
         return redirect('studentList')
+    
+def upload_profile(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('show_profiles')
+    else:
+        form = ProfileForm()
+        return render(request, 'upload.html', {'form': form})
+    
+def show_profiles(request):
+    profiles = Profile.objects.all()
+    return render(request, 'profile.html',{'profiles':profiles})
+git a
