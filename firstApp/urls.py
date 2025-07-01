@@ -15,4 +15,5 @@ urlpatterns = [
     path('homepage', views.homepage, name='homepage'),
     path('upload_profile', views.upload_profile, name='upload_profile'),
     path('show_profiles', views.show_profiles, name='show_profiles'),
+    path('students', views.students),
 ]

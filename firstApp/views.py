@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from firstApp.forms import CollegeForm, ProfileForm, StudentForm
 from firstApp.models import College, Profile, Student
+from firstApp.serializers import StudentSerializer
 
 # Create your views here.
 
@@ -21,7 +22,8 @@ def addCollege(request):
         form = CollegeForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('studentList')
+            students = Student.objects.select_related('college').all()
+            return render(request, 'student_list.html', {'students':students})
     else:
         form = CollegeForm()
     return render(request,'add_college.html', {'form':form})
@@ -90,4 +92,16 @@ def upload_profile(request):
 def show_profiles(request):
     profiles = Profile.objects.all()
     return render(request, 'profile.html',{'profiles':profiles})
-git a
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET','POST'])
+def students(request):
+    if request.method == 'GET':
+        students = Student.objects.all()
+        serializer = StudentSerializer(students, many = True)
+        return Response(serializer.data) 
+
+# pip install django djangorestframework
+
