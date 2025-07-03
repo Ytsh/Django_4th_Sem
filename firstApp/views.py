@@ -4,9 +4,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from firstApp.forms import CollegeForm, ProfileForm, StudentForm
 from firstApp.models import College, Profile, Student
 from firstApp.serializers import StudentSerializer
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
+@login_required
 def home(request):
     return HttpResponse("Hellow from firstApp")
 
@@ -96,12 +98,19 @@ def show_profiles(request):
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PATCH','DELETE'])
 def students(request):
     if request.method == 'GET':
         students = Student.objects.all()
         serializer = StudentSerializer(students, many = True)
         return Response(serializer.data) 
+    elif request.method == 'POST':
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
 
 # pip install django djangorestframework
 
