@@ -7,4 +7,4 @@ from django.contrib.auth.models import Group
 def create_default_groups(sender, **kwargs):
     groups = ['Admin', 'Student', 'College']
     for group_name in groups:
-        Group.objects.get_orcreate(name = group_name)
+        Group.objects.get_or_create(name = group_name)
