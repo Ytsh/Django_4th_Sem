@@ -6,12 +6,15 @@ from firstApp.models import College, Profile, Student
 from firstApp.serializers import StudentSerializer
 from django.contrib.auth.decorators import login_required
 
+from firstApp.utils import group_required
+
 # Create your views here.
 
 @login_required
 def home(request):
     return HttpResponse("Hellow from firstApp")
 
+@group_required('Teacher')
 def helloFromHtmlPage(request):
     context = {
         'title':'Welcome!',
@@ -111,6 +114,9 @@ def students(request):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-
+def redirect_based_on_role(request):
+    user = request.user
+    if user.groups.filter(name='Admin').exists():
+        return redirect('admin_dashboard')
 # pip install django djangorestframework
 
