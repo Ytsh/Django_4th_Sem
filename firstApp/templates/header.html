@@ -1,5 +1,15 @@
 
-
-<div class="header">
-    This is a header.
+<!-- eslai css lekhne right corner ma float garne kaam timi -->
+{% if user.is_authenticated %}
+<div style="float: left;">
+    Welcome, {{ user.full_name }}
 </div>
+<div style="float: right;">
+    <a href="{% url 'logout' %}">logout</a>
+</div>
+{% else %}
+<div style="float: right;">
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'signup' %}">Signup</a>
+</div>
+{% endif %}

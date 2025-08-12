@@ -1,7 +1,8 @@
+from datetime import date, timedelta
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from firstApp.forms import CollegeForm, ProfileForm, StudentForm
+from firstApp.forms import CollegeForm, CustomUserSignupForm, IndependentForm, ProfileForm, StudentForm
 from firstApp.models import College, Profile, Student
 from firstApp.serializers import StudentSerializer
 from django.contrib.auth.decorators import login_required
@@ -118,5 +119,84 @@ def redirect_based_on_role(request):
     user = request.user
     if user.groups.filter(name='Admin').exists():
         return redirect('admin_dashboard')
+    elif user.groups.filter(name='College').exists():
+        return redirect('add_college')
+    elif user.groups.filter(name='Student').exists():
+        return redirect('studentList')
+    else:
+        return redirect('profile.html')
 # pip install django djangorestframework
+
+from django.contrib.auth import login as login_user,logout as lg,authenticate
+from django.contrib.auth.models import Group
+def signup_view(request):
+    if request.method == "POST":
+        form = CustomUserSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            role = form.cleaned_data['role']
+            group, created = Group.objects.get_or_create(name = role)
+            user.groups.add(group)
+            login_user(request,user)
+            return redirect_based_on_role(request)
+        else:
+            print(form.errors)
+    else:
+        form = CustomUserSignupForm()
+        return render(request, 'signup.html', {'form':form})
+    
+def login(request):
+    if(request.method =='POST'):
+        email = request.POST.get('email')
+        password= request.POST.get('password')
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            login_user(request,user)
+            return redirect('homepage')
+        else:
+            error = "Invalid email or password"
+            return render(request, 'login.html',{'error':error})
+    return render(request,'login.html')
+
+
+def logout(request):
+    lg(request)
+    return redirect('login')
+
+def using_independent_form(request):
+    if request.method == 'POST':
+        form = IndependentForm(request.POST)
+        email = form.cleaned_data['email']
+        # as per requirement
+    else:
+        form = IndependentForm()
+
+    return render(request, 'page.html',{'form':form})
+from django.db.models import Count, Min, Max,Q
+def querysets():
+    Student.objects.filter(enrollment_date__lte = date(2024,5,10))
+    Student.objects.filter(college__name='Bernhardt College')
+    Student.objects.filter(college__name='Bernhardt College').distinct()
+    Student.objects.order_by('-name')
+    summary = Student.objects.aggregate(
+        total_student = Count('id'),
+        earliest_registration = Min('enrollment_date'),
+        latest_registration = Max('enrollment_date')
+    )
+    colleges = College.objects.annotate(student_count = Count('students'))
+    College.objects.annotate(
+        active_students = Count('students', 
+        filter=Q(students__enrollment_date__gte=date.today()-timedelta(days=4*365)))
+    )
+
+    Student.objects.filter(
+        (Q(name='Harry') | Q(name = 'Ram')) & ~Q(is_avtive=False)
+    )
+    Student.objects.exclude(
+        (Q(name='Harry') | Q(name = 'Ram')) & ~Q(is_avtive=False)
+    )
+    Student.objects.filter(enrollment_date__lte = date(2024,5,10),
+                            college__name='Bernhardt College')
+        
 

@@ -16,4 +16,7 @@ urlpatterns = [
     path('upload_profile', views.upload_profile, name='upload_profile'),
     path('show_profiles', views.show_profiles, name='show_profiles'),
     path('students', views.students),
+    path('signup/', views.signup_view , name='signup'),
+    path('login/', views.login , name='login'),
+    path('logout/', views.logout , name='logout'),
 ]
